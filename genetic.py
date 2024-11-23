@@ -1,4 +1,3 @@
-from bird import Player
 import random
 import arcade
 import numpy
@@ -50,3 +49,6 @@ class Genetic_Algorithm:
             else:
                 return val
         return mutate_augmented
+
+
+from bird import Player  # noqa

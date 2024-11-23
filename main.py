@@ -1,7 +1,5 @@
 import arcade
-import random
 import sys
-import ast
 
 import neural
 
