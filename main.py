@@ -12,11 +12,12 @@ from pipe import Pipe
 
 from config import *
 
+
 class Game(arcade.Window):
     # ############################################################################
     # Description:          Creates the game screen and sets everything up.
     # ############################################################################
-    def __init__(self, players = 1, demo_mode = False, neural_network_to_load = neural.NeuralNetwork(4, HIDDEN_NODES, 1)):
+    def __init__(self, players=1, demo_mode=False, neural_network_to_load=neural.NeuralNetwork(4, HIDDEN_NODES, 1)):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE)
 
         # These are the sprite lists that contain the bird/pipe objects
@@ -51,20 +52,20 @@ class Game(arcade.Window):
         self.setup()
         self.dead_birds_array = []
         self.dead_birds_dict = {}
-        
+
     # ############################################################################
     # Description:          Function used to configure sprites lists.  We
-    #                       highjack this for setting up our sprite list with the 
+    #                       highjack this for setting up our sprite list with the
     #                       genetic algorithm results.
     # ############################################################################
     def setup(self):
         self.pipes = arcade.SpriteList()
-        
+
         # If the generation is the first we need to create the birds.
 
         if self.demo_mode:
             self.bird_list = arcade.SpriteList()
-            self.bird_list.append(Player(neural_net = self.demo_network))
+            self.bird_list.append(Player(neural_net=self.demo_network))
             self.player_count = 1
         else:
             if self.generation == 0:
@@ -73,8 +74,8 @@ class Game(arcade.Window):
                     self.bird_list.append(Player())
             # Otherwise send to the genetic algorithm to modify them.
             else:
-                self.bird_list = Genetic_Algorithm.next_gen(self.dead_birds_array)
-
+                self.bird_list = Genetic_Algorithm.next_gen(
+                    self.dead_birds_array)
 
         # Create initial pipes
         left, right = Pipe.generate_pipes(SCREEN_WIDTH + 20)
@@ -93,15 +94,17 @@ class Game(arcade.Window):
     def on_draw(self):
         arcade.start_render()
 
-        # Draw our objects to the window :) 
+        # Draw our objects to the window :)
         self.bird_list.draw()
         self.pipes.draw()
 
         # Helpful neural network information printing
-        arcade.draw_text("Generation: " + str(self.generation), 10, SCREEN_HEIGHT - 20, arcade.color.WHITE, 12)
-        arcade.draw_text("Max Run Score: " + str(self.max_score), 10, SCREEN_HEIGHT - 40, arcade.color.WHITE, 12)
-        arcade.draw_text("Max Score: " + str(self.global_max), 10, SCREEN_HEIGHT - 60, arcade.color.WHITE, 12)
-
+        arcade.draw_text("Generation: " + str(self.generation),
+                         10, SCREEN_HEIGHT - 20, arcade.color.WHITE, 12)
+        arcade.draw_text("Max Run Score: " + str(self.max_score),
+                         10, SCREEN_HEIGHT - 40, arcade.color.WHITE, 12)
+        arcade.draw_text("Max Score: " + str(self.global_max),
+                         10, SCREEN_HEIGHT - 60, arcade.color.WHITE, 12)
 
     # ############################################################################
     # Description:          Update the game.  Calls into a number of other update
@@ -123,7 +126,6 @@ class Game(arcade.Window):
                 pipes_to_score += 1
                 # Mark the pipe as scored.
                 pipe.scored = True
-            
 
             # If the pipe needs to be deleted then create new pices to later add.
             if pipe.delete:
@@ -134,7 +136,8 @@ class Game(arcade.Window):
         for bird in self.bird_list:
             if not bird.disabled and not bird.dead:
                 bird.score += (pipes_to_score * 1000)
-                collisions = arcade.check_for_collision_with_list(bird, self.pipes)
+                collisions = arcade.check_for_collision_with_list(
+                    bird, self.pipes)
                 # If the bird collides with a block then it becomes disabled.
                 if len(collisions) > 0:
                     bird.disabled = True
@@ -152,9 +155,10 @@ class Game(arcade.Window):
 
             # Call the update method for our bird
             nearest_pipe.color = arcade.color.RED
-            bird.update([nearest_pipe.center_y, nearest_pipe.center_x], delta_time = delta_time)
+            bird.update(
+                [nearest_pipe.center_y, nearest_pipe.center_x], delta_time=delta_time)
             bird_count += 1
-        
+
         # Pop top and bottom pipes and add new ones.
         if left != None:
             self.pipes.pop(0)
@@ -170,21 +174,20 @@ class Game(arcade.Window):
             self.global_max = self.max_score
             self.global_reached = True
 
-        
         # If the game is about to be reset then save off the serialized data.
         if reset_needed and self.global_reached:
             data = self.best_bird.neural_net.serialize()
             # Save string of dictionary.  Can read it in with ast later.
             with open(NEURAL_NET_OUT, "w+") as fle:
                 fle.write(str(data))
-            print("Generation " + str(self.generation) + " of score " + str(self.global_max) + " written.")
+            print("Generation " + str(self.generation) +
+                  " of score " + str(self.global_max) + " written.")
             self.best_bird = None
-            
-        
+
         # Handle reset.
         if reset_needed:
             self.reset()
-    
+
 
 if __name__ == "__main__":
     window = None
@@ -195,9 +198,9 @@ if __name__ == "__main__":
         with open(neural_network_path) as fle:
             data = fle.read()
         neural_net = neural.NeuralNetwork.deserialize(data)
-        window = Game(demo_mode = True, neural_network_to_load = neural_net)
+        window = Game(demo_mode=True, neural_network_to_load=neural_net)
     # Otherwise run the genetic algorithm sim.
     else:
-        window = Game(players = MAX_PLAYERS)
+        window = Game(players=MAX_PLAYERS)
     window.setup()
     arcade.run()

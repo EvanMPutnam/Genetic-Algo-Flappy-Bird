@@ -7,10 +7,12 @@ from matrix import Matrix
 
 # ################################################
 # Description:      An object that stores function
-#                   pointers to an activation 
-#                   function and its deriviative 
+#                   pointers to an activation
+#                   function and its deriviative
 #                   function.
 # ################################################
+
+
 class ActivationFunction:
     def __init__(self, func, dFunc):
         self.func = func
@@ -18,18 +20,21 @@ class ActivationFunction:
 
 
 # ################################################
-# Description:      The following four functions 
+# Description:      The following four functions
 #                   are activation functions.
 # ################################################
 
 def sigmoid(e):
     return 1 / (1 + math.exp(-e))
 
+
 def sigmoidDeriv(e):
     return e * (1 - e)
 
+
 def tanh(e):
     return math.tanh(e)
+
 
 def tanhDeriv(e):
     return 1 - (e * e)
@@ -46,7 +51,7 @@ def tanhDeriv(e):
 #
 #                   copy: Deepcopys the neural network.
 #
-#                   setActivationFunction: Can assign 
+#                   setActivationFunction: Can assign
 #                     new activation functions.
 #
 #                   train: Give input array and output to train on.
@@ -57,7 +62,7 @@ def tanhDeriv(e):
 #
 #                   serialize: Creates a string representation of object.
 #
-#                   class.deserialize: Takes a string representation and 
+#                   class.deserialize: Takes a string representation and
 #                       creates a new obj
 #
 #
@@ -69,7 +74,7 @@ class NeuralNetwork:
         # Assign numbers to node layer count.
         self.input_nodes = in_nodes
         self.hidden_nodes = hidden_nodes
-        self.output_nodes= out_nodes
+        self.output_nodes = out_nodes
 
         # Create the needed variables.
         self.weights_ih = Matrix(self.hidden_nodes, self.input_nodes)
@@ -89,22 +94,22 @@ class NeuralNetwork:
     def copy(self):
         return copy.deepcopy(self)
 
-    def setLearningRate(self, learning_rate = 0.1):
+    def setLearningRate(self, learning_rate=0.1):
         self.learning_rate = learning_rate
 
-    def setActivationFunction(self, func = sigmoid, dFunc = sigmoidDeriv):
+    def setActivationFunction(self, func=sigmoid, dFunc=sigmoidDeriv):
         self.activation_function = ActivationFunction(func, dFunc)
-    
+
     def predict(self, input_array):
         inputs = Matrix.fromArray(input_array)
-        
+
         hidden = Matrix.multiply(self.weights_ih, inputs) \
-                .add(self.bias_h) \
-                .map(self.activation_function.func)
-    
+            .add(self.bias_h) \
+            .map(self.activation_function.func)
+
         output = Matrix.multiply(self.weights_ho, hidden) \
-                .add(self.bias_o) \
-                .map(self.activation_function.func)
+            .add(self.bias_o) \
+            .map(self.activation_function.func)
 
         return output.toArray()
 
@@ -112,22 +117,20 @@ class NeuralNetwork:
         inputs = Matrix.fromArray(input_array)
 
         hidden = Matrix.multiply(self.weights_ih, inputs) \
-                    .add(self.bias_h) \
-                    .map(self.activation_function.func)
-
+            .add(self.bias_h) \
+            .map(self.activation_function.func)
 
         outputs = Matrix.multiply(self.weights_ho, hidden) \
-                    .add(self.bias_o) \
-                    .map(self.activation_function.func)
+            .add(self.bias_o) \
+            .map(self.activation_function.func)
 
         targets = Matrix.fromArray(target_array)
 
         output_errors = Matrix.subtractMatrices(targets, outputs)
 
         gradients = Matrix.map(outputs, self.activation_function.dFunc) \
-                        .multiplySelf(output_errors) \
-                        .multiplySelf(self.learning_rate)
-
+            .multiplySelf(output_errors) \
+            .multiplySelf(self.learning_rate)
 
         hidden_T = Matrix.transposeMatrix(hidden)
         weight_ho_deltas = Matrix.multiply(gradients, hidden_T)
@@ -139,8 +142,8 @@ class NeuralNetwork:
         hidden_errors = Matrix.multiply(who_t, output_errors)
 
         hidden_gradient = Matrix.map(hidden, self.activation_function.dFunc) \
-                            .multiplySelf(hidden_errors) \
-                            .multiplySelf(self.learning_rate)
+            .multiplySelf(hidden_errors) \
+            .multiplySelf(self.learning_rate)
 
         inputs_T = Matrix.transposeMatrix(inputs)
         weight_ih_deltas = Matrix.multiply(hidden_gradient, inputs_T)
@@ -159,9 +162,9 @@ class NeuralNetwork:
 
     def serialize(self):
         data = {
-            "input_nodes": self.input_nodes, 
-            "output_nodes": self.output_nodes, 
-            "hidden_nodes": self.hidden_nodes, 
+            "input_nodes": self.input_nodes,
+            "output_nodes": self.output_nodes,
+            "hidden_nodes": self.hidden_nodes,
             "weights_ih": self.weights_ih.serialize(),
             "weights_ho": self.weights_ho.serialize(),
             "bias_h": self.bias_h.serialize(),
@@ -174,9 +177,9 @@ class NeuralNetwork:
     @staticmethod
     def deserialize(data):
         loaded = json.loads(data)
-        nn = NeuralNetwork(loaded['input_nodes'], 
-                            loaded['hidden_nodes'], 
-                            loaded['output_nodes'])
+        nn = NeuralNetwork(loaded['input_nodes'],
+                           loaded['hidden_nodes'],
+                           loaded['output_nodes'])
         nn.weights_ih = Matrix.deserialize(loaded['weights_ih'])
         nn.weights_ho = Matrix.deserialize(loaded['weights_ho'])
         nn.bias_h = Matrix.deserialize(loaded['bias_h'])
@@ -188,4 +191,3 @@ class NeuralNetwork:
         else:
             nn.activation_function = ActivationFunction(tanh, tanhDeriv)
         return nn
-

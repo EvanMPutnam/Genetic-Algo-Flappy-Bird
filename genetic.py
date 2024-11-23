@@ -1,11 +1,13 @@
+from bird import Player
 import random
 import arcade
 import numpy
 
+
 class Genetic_Algorithm:
 
     @staticmethod
-    def next_gen(birds, keep_num = 10):
+    def next_gen(birds, keep_num=10):
         Genetic_Algorithm.calculate_fitness(birds)
         total = len(birds)
         birds_list = arcade.SpriteList()
@@ -24,7 +26,7 @@ class Genetic_Algorithm:
             index += 1
         index -= 1
         bird = birds[index]
-        child = Player(neural_net = bird.neural_net.copy())
+        child = Player(neural_net=bird.neural_net.copy())
         child.fitness = bird.fitness
         child.mutate()
         return child
@@ -39,7 +41,7 @@ class Genetic_Algorithm:
             bird.fitness = bird.score / sum_v
             bird.score = 0
 
-    @staticmethod 
+    @staticmethod
     def mutate(rate):
         # Create a function for augmentation.
         def mutate_augmented(val):
@@ -48,7 +50,3 @@ class Genetic_Algorithm:
             else:
                 return val
         return mutate_augmented
-
-
-
-from bird import Player

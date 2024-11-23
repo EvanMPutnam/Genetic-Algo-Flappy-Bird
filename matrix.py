@@ -4,9 +4,11 @@ import json
 import copy
 
 # ################################################
-# Description:      Class that is used to help in  
+# Description:      Class that is used to help in
 #                   serialization of numpy arrays.
 # ################################################
+
+
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
@@ -17,7 +19,7 @@ class NumpyEncoder(json.JSONEncoder):
 # ################################################
 # Description:      This is a class that abstracts
 #                   away a lot of matrix functionality.
-#                   Has a number of basic operations as 
+#                   Has a number of basic operations as
 #                   wells as some serialization options.
 # ################################################
 class Matrix:
@@ -27,16 +29,15 @@ class Matrix:
         self.matrix = np.zeros((rows, cols))
 
     # ################################################
-    # Description:      Deepcopy the matrix and return  
+    # Description:      Deepcopy the matrix and return
     # ################################################
     def copy(self):
         matrix = copy.deepcopy(self)
         return matrix
 
-    
     # ################################################
     # Description:      Converts the numpy matrix internal
-    #                   object to an array. 
+    #                   object to an array.
     # ################################################
     def toArray(self):
         lst = list(self.matrix)
@@ -47,7 +48,7 @@ class Matrix:
     # ################################################
     # Description:      Add two matricies together.
     #                   If input is an int add item
-    #                   to all elements. 
+    #                   to all elements.
     # ################################################
     def add(self, a):
         if isinstance(a, int) or isinstance(a, float):
@@ -70,12 +71,12 @@ class Matrix:
                 self.matrix[y][x] = (random.random() * 2) - 1
 
     # ################################################
-    # Description:      Serialize the matrix into a 
+    # Description:      Serialize the matrix into a
     #                   string object.
     # ################################################
     def serialize(self):
         j = {'rows': self.rows, "cols": self.cols, "matrix": self.matrix}
-        return json.dumps(j, cls = NumpyEncoder)
+        return json.dumps(j, cls=NumpyEncoder)
 
     # ################################################
     # Description:      Easy print for matrix.
@@ -84,10 +85,10 @@ class Matrix:
         print(self.matrix)
 
     # ################################################
-    # Description:      Multiplies self by another 
+    # Description:      Multiplies self by another
     #                   matrix.
     # ################################################
-    def multiplySelf(self, nM):   
+    def multiplySelf(self, nM):
         if isinstance(nM, float) or isinstance(nM, int):
             matrix = np.multiply(nM, self.matrix)
         else:
@@ -104,7 +105,7 @@ class Matrix:
         mObj = Matrix(rows, cols)
         mObj.matrix = matrix
         return mObj
-        
+
         pass
 
     # ################################################
@@ -216,8 +217,6 @@ class Matrix:
         return mObj
 
 
-
-    
 if __name__ == "__main__":
 
     m = Matrix(3, 3)
@@ -229,14 +228,13 @@ if __name__ == "__main__":
     print(m.matrix)
 
     print()
-    m =  Matrix(2, 2)
+    m = Matrix(2, 2)
     m.matrix[0] = [1, 2]
     m.matrix[1] = [3, 4]
     n = Matrix(2, 2)
     n.matrix[0] = [10, 11]
     n.matrix[1] = [12, 13]
     print(n.add(m).matrix)
-
 
     print()
     m = Matrix(3, 2)
@@ -252,8 +250,6 @@ if __name__ == "__main__":
     print(m.multiplySelf(n1).matrix)
     print(Matrix.multiply(m, n1).matrix)
 
-
-    
     m = Matrix(2, 3)
     m.matrix[0] = [1, 2, 3]
     m.matrix[1] = [4, 5, 6]

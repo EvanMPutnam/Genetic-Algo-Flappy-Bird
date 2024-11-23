@@ -1,3 +1,5 @@
+import os
+
 # Velocity constants
 JUMP_SPEED = 10
 GRAVITY = -10
@@ -6,7 +8,7 @@ MAX_POSITIVE_VEL = 4
 
 # Constant neural network properties
 HIDDEN_NODES = 3
-JUMP_THRESHOLD = 0.75 
+JUMP_THRESHOLD = 0.75
 MAX_PLAYERS = 500
 NEURAL_NET_OUT = "neural"
 
@@ -14,8 +16,9 @@ NEURAL_NET_OUT = "neural"
 BIRD_X_POSITION = 60
 
 # Asset constants
-DEFAULT_BIRD_TEXTURE = "assets\\sprites\\bluebird-midflap.png"
-DEFAULT_WALL_TEXTURE = "assets\\sprites\\pipe-green.png"
+DEFAULT_BIRD_TEXTURE = os.path.join(
+    "assets", "sprites", "bluebird-midflap.png")
+DEFAULT_WALL_TEXTURE = os.path.join("assets", "sprites", "pipe-green.png")
 
 # Values for wall if its an upper or lower wall.
 UPPER = 1
